@@ -3,10 +3,15 @@ import nodemailer from "nodemailer";
 export async function sendPasswordResetEmail(email, resetToken) {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail", // Or use SMTP settings
+      host: process.env.SMTP_HOST,  // ✅ Use env variables
+      port: process.env.SMTP_PORT,  // ✅ Correct SMTP port
+      secure: false, // ✅ Use `false` for port 587, `true` for port 465
       auth: {
-        user: process.env.EMAIL_USER, // Your email
-        pass: process.env.EMAIL_PASS, // Your email app password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false, // ✅ Prevent certificate errors
       },
     });
 
@@ -24,9 +29,9 @@ export async function sendPasswordResetEmail(email, resetToken) {
       `,
     });
 
-    console.log(`Password reset email sent to ${email}`);
+    console.log(`✅ Password reset email sent to ${email}`);
   } catch (error) {
-    console.error("Failed to send email:", error);
+    console.error("❌ Failed to send email:", error);
     throw new Error("Failed to send password reset email");
   }
 }
